@@ -115,4 +115,5 @@ void setNextInterruptInterval();
 void adjustSpeedScales();
 void runAndWait();
 void initSettings();
+void sendInfo(void);
 #endif // MACSTEPPER_H

@@ -5,6 +5,13 @@ volatile stepperInfo steppers[NUM_STEPPERS];
 volatile byte remainingSteppersFlag = 0;
 volatile byte nextStepperFlag = 0;
 
+void sendInfo(void){
+  for(int i = 0; i < 5; i++){
+    Serial.print("motor"+String(i)+"degree: "+String(steppers[i].stepPosition)+"\n");
+  }
+}
+        
+
 void initSettings(void){
     pinMode(X_STEP_PIN, OUTPUT);
     pinMode(X_DIR_PIN, OUTPUT);
