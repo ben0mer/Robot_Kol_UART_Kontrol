@@ -24,6 +24,13 @@ struct motorSettings
     int motor2degree;
     int motor3degree;
     int motor4degree;
+    int motor0estDegree;
+    int motor1estDegree;
+    int motor2estDegree;
+    int motor3estDegree;
+    int motor4estDegree;
+    bool isMotorMoving;
+    int missionNumber;
 };
 
 

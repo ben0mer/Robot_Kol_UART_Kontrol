@@ -54,32 +54,32 @@
 #define TIMER1_INTERRUPTS_OFF   TIMSK1 &= ~(1 << OCIE1A);
 
 struct stepperInfo {
-  // externally defined parameters
-  float acceleration;
-  volatile unsigned long minStepInterval; // ie. max speed, smaller is faster
-  void (*dirFunc)(int);
-  void (*stepFunc)();
-  float stepPerDegree;
+  // Dışarıdan Tanımlanacak Parametreler
+  float acceleration;                      // İvme
+  volatile unsigned long minStepInterval;  // Maksimum hız, ne kadar küçükse o kadar hızlıdır.
+  void (*dirFunc)(int);                    // Yön Fonksiyonu
+  void (*stepFunc)();                      // Adım Fonksiyonu
+  float stepPerDegree;                     // Derece başına adım sayısı
 
-  // derived parameters
-  unsigned int c0;                // step interval for first step, determines acceleration
-  long stepPosition;              // current position of stepper (total of all movements taken so far)
+   // Türetilmiş Parametreler
+  unsigned int c0;                         // İlk adım için adım aralığı, hızlanmayı belirler
+  long stepPosition;                       // Step motorun şuanki konumu (Şuana kadar gerçekleştirilmiş hareketlerin toplamı)
 
-  // per movement variables (only changed once per movement)
-  volatile int dir;                        // current direction of movement, used to keep track of position
-  volatile unsigned int totalSteps;        // number of steps requested for current movement
-  volatile bool movementDone = false;      // true if the current movement has been completed (used by main program to wait for completion)
-  volatile unsigned int rampUpStepCount;   // number of steps taken to reach either max speed, or half-way to the goal (will be zero until this number is known)
-  volatile unsigned long estStepsToSpeed;  // estimated steps required to reach max speed
-  volatile unsigned long estTimeForMove;   // estimated time (interrupt ticks) required to complete movement
-  volatile unsigned long rampUpStepTime;
-  volatile float speedScale;               // used to slow down this motor to make coordinated movement with other motors
+  // Hareket Parametreleri (Hareket başında yalnızca bir defa değiştirilir.)
+  volatile int dir;                        // Konumu takip etmek için kullanılacak mevcut hareket yönü
+  volatile unsigned int totalSteps;        // Mevcut hareket için istenen toplam adım sayısı
+  volatile bool movementDone = false;      // Hareket tamamlanmış ise "true" değerini alır. Main program tarafından hareketin tamamlandığını kontrol etmek için kullanılır.
+  volatile unsigned int rampUpStepCount;   // Maksimum hıza veya hedefin yarısına ulaşmak için atılan adım sayısı. Bu sayı bilinene kadar sıfır olacaktır.
+  volatile unsigned long estStepsToSpeed;  // Maksimum hıza ulaşmak için gerekli tahmini adım sayısı.
+  volatile unsigned long estTimeForMove;   // Hareketi tamamlamak için gerekli tahmini süre (Timer İnterrupt Tick)
+  volatile unsigned long rampUpStepTime;   // Maksimum hıza ulaşmak için gereken tahmini süre (Timer İnterrupt Tick)
+  volatile float speedScale;               // Diğer motorlarla koordineli hareket yapmak amacıyla bu motoru yavaşlatmak  için bu katsayı kullanılır.
 
-  // per iteration variables (potentially changed every interrupt)
-  volatile unsigned int n;                 // index in acceleration curve, used to calculate next interval
-  volatile float d;                        // current interval length
-  volatile unsigned long di;               // above variable truncated
-  volatile unsigned int stepCount;         // number of steps completed in current movement
+  // İterasyon Parametreleri (Her kesmede değişebilir)
+  volatile unsigned int n;                 // Bir sonraki aralığı hesaplamak için kullanılan hızlanma eğrisindeki indeks
+  volatile float d;                        // Mevcut aralık uzunluğu
+  volatile unsigned long di;               // Yukarıdaki değişken kesildi
+  volatile unsigned int stepCount;         // Mevcut harekette tamamlanan step sayısı
 };
 void xStep();
 void xDir(int dir);

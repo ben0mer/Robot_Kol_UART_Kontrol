@@ -7,7 +7,7 @@ volatile byte nextStepperFlag = 0;
 
 void sendInfo(void){
   for(int i = 0; i < 5; i++){
-    Serial.print("motor"+String(i)+"degree: "+String(steppers[i].stepPosition)+"\n");
+    Serial.println("<POZ," + String(i) + "," + String(steppers[i].stepPosition) + ">");
   }
 }
         
@@ -108,6 +108,34 @@ void resetStepperInfo( stepperInfo& si ) {
   si.stepPosition = 0;
   si.movementDone = false;
 }
+
+
+
+
+void prepareMovement(int whichMotor, int degrees) {
+  long steps = degrees * steppers[whichMotor].stepPerDegree;
+  volatile stepperInfo& si = steppers[whichMotor];
+  si.dirFunc( steps < 0 ? HIGH : LOW );
+  si.dir = steps > 0 ? 1 : -1;
+  si.totalSteps = abs(steps);
+  resetStepper(si);
+  
+  remainingSteppersFlag |= (1 << whichMotor);
+
+  unsigned long stepsAbs = abs(steps);
+
+  if ( (2 * si.estStepsToSpeed) < stepsAbs ) {
+    // Bu koşulda motor maksimum hıza ulaşabilir.
+    unsigned long stepsAtFullSpeed = stepsAbs - 2 * si.estStepsToSpeed; // Maksimum hızda atılacak adım sayısı
+    float accelDecelTime = getDurationOfAcceleration(si, si.estStepsToSpeed); // Yavaşlarken veya hızlanırken geçecek süre hesplanması (ikiside eşit) 
+    si.estTimeForMove = 2 * accelDecelTime + stepsAtFullSpeed * si.minStepInterval; // Hareketin tamamlanması için gereken tahmini süre
+  }
+  else {
+    // Bu koşulda motor maksimum hıza ulaşamaz ve yavaşlayarak durur.
+    float accelDecelTime = getDurationOfAcceleration( si, stepsAbs / 2 ); // Yavaşlarken geçecek süre (Hareketin yarısında maksimum hıza ulaşılır.)
+    si.estTimeForMove = 2 * accelDecelTime; // Hareketin tamamlanması için gereken tahmini süre
+  }
+}
 void resetStepper(volatile stepperInfo& si) {
   si.c0 = si.acceleration;
   si.d = si.c0;
@@ -126,39 +154,47 @@ void resetStepper(volatile stepperInfo& si) {
 
   si.estStepsToSpeed = n;
 }
-
 float getDurationOfAcceleration(volatile stepperInfo& s, unsigned int numSteps) {
   float d = s.c0;
   float totalDuration = 0;
   for (unsigned int n = 1; n < numSteps; n++) {
-    d = d - (2 * d) / (4 * n + 1);
+    d = d - (2 * d) / (4 * n + 1); // Toplam süreye yeni adım aralığı eklenir.
     totalDuration += d;
   }
   return totalDuration;
 }
 
-void prepareMovement(int whichMotor, int degrees) {
-  long steps = degrees * steppers[whichMotor].stepPerDegree;
-  volatile stepperInfo& si = steppers[whichMotor];
-  si.dirFunc( steps < 0 ? HIGH : LOW );
-  si.dir = steps > 0 ? 1 : -1;
-  si.totalSteps = abs(steps);
-  resetStepper(si);
+
+volatile int buffer[] = {0,0,0,0,0};
+volatile int bufferAim[] = {90,120,300,6,60};
+
+
+
+void runAndWait() {
+  adjustSpeedScales();
+  setNextInterruptInterval();
+  TIMER1_INTERRUPTS_ON
+  while ( remainingSteppersFlag );
+  sendInfo();
+  remainingSteppersFlag = 0;
+  nextStepperFlag = 0;
+}
+void adjustSpeedScales() {
+  float maxTime = 0;
   
-  remainingSteppersFlag |= (1 << whichMotor);
-
-  unsigned long stepsAbs = abs(steps);
-
-  if ( (2 * si.estStepsToSpeed) < stepsAbs ) {
-    // there will be a period of time at full speed
-    unsigned long stepsAtFullSpeed = stepsAbs - 2 * si.estStepsToSpeed;
-    float accelDecelTime = getDurationOfAcceleration(si, si.estStepsToSpeed);
-    si.estTimeForMove = 2 * accelDecelTime + stepsAtFullSpeed * si.minStepInterval;
+  for (int i = 0; i < NUM_STEPPERS; i++) {
+    if ( ! ((1 << i) & remainingSteppersFlag) )
+      continue;
+    if ( steppers[i].estTimeForMove > maxTime )
+      maxTime = steppers[i].estTimeForMove;
   }
-  else {
-    // will not reach full speed before needing to slow down again
-    float accelDecelTime = getDurationOfAcceleration( si, stepsAbs / 2 );
-    si.estTimeForMove = 2 * accelDecelTime;
+
+  if ( maxTime != 0 ) {
+    for (int i = 0; i < NUM_STEPPERS; i++) {
+      if ( ! ( (1 << i) & remainingSteppersFlag) )
+        continue;
+      steppers[i].speedScale = maxTime / steppers[i].estTimeForMove;
+    }
   }
 }
 
@@ -193,7 +229,7 @@ ISR(TIMER1_COMPA_vect)
   unsigned int tmpCtr = OCR1A;
 
   OCR1A = 65500;
-
+  
   for (int i = 0; i < NUM_STEPPERS; i++) {
 
 
@@ -204,7 +240,7 @@ ISR(TIMER1_COMPA_vect)
       steppers[i].di -= tmpCtr;
       continue;
     }
-
+    
     volatile stepperInfo& s = steppers[i];
 
     if ( s.stepCount < s.totalSteps ) {
@@ -233,6 +269,11 @@ ISR(TIMER1_COMPA_vect)
       s.d = (s.d * (4 * s.n + 1)) / (4 * s.n + 1 - 2);
       s.n--;
     }
+    buffer[i]++;
+    if(buffer[i] == bufferAim[i]){
+      Serial.println("<POZ," + String(i) + "," + String(s.stepPosition) + ">");
+      buffer[i] = 0;
+    }
 
     s.di = s.d * s.speedScale; // integer
   }
@@ -241,34 +282,6 @@ ISR(TIMER1_COMPA_vect)
 
   TCNT1  = 0;
 }
-
-void adjustSpeedScales() {
-  float maxTime = 0;
-  
-  for (int i = 0; i < NUM_STEPPERS; i++) {
-    if ( ! ((1 << i) & remainingSteppersFlag) )
-      continue;
-    if ( steppers[i].estTimeForMove > maxTime )
-      maxTime = steppers[i].estTimeForMove;
-  }
-
-  if ( maxTime != 0 ) {
-    for (int i = 0; i < NUM_STEPPERS; i++) {
-      if ( ! ( (1 << i) & remainingSteppersFlag) )
-        continue;
-      steppers[i].speedScale = maxTime / steppers[i].estTimeForMove;
-    }
-  }
-}
-void runAndWait() {
-  adjustSpeedScales();
-  setNextInterruptInterval();
-  TIMER1_INTERRUPTS_ON
-  while ( remainingSteppersFlag );
-  remainingSteppersFlag = 0;
-  nextStepperFlag = 0;
-}
-
 void xStep() {
   X_STEP_HIGH
   X_STEP_LOW
