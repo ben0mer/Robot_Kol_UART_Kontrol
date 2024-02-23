@@ -10,6 +10,11 @@ void sendInfo(void){
     Serial.println("<POZ," + String(i) + "," + String(steppers[i].stepPosition) + ">");
   }
 }
+void setAccelandSpeed(int motor, int accel, int speed){
+  steppers[motor].acceleration = accel;
+  steppers[motor].minStepInterval = speed;
+}
+
         
 
 void initSettings(void){

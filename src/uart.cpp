@@ -77,6 +77,10 @@ void messageParser(void){
     else if(messagePtr->message == "SOL"){
         Serial.println("<SOL tetiklendi>");
     }
+    else if(messagePtr->message.substring(0,7) == "HIZIVME"){
+        Serial.println("<HIZIVME tetiklendi>");
+        hizivmeAyarla(*motorPtr, *messagePtr);
+    }
     else if(messagePtr->message.substring(0,5) == "GOREV"){
         Serial.println("<GOREV Basliyor>");
         Serial.println("<2>");

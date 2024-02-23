@@ -7,6 +7,7 @@ void goMotor(motorSettings& motor);
 void setCurrentDegree(motorSettings& motor);
 void setCurrentDegreeGo(motorSettings& motor);
 void offsetMotor(motorSettings& motor);
+void hizivmeAyarla(motorSettings& motor , messageProtocol& message);
 void missionMotor(motorSettings& motor, messageProtocol& message);
 
 

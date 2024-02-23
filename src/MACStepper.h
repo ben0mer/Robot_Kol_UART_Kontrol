@@ -116,4 +116,5 @@ void adjustSpeedScales();
 void runAndWait();
 void initSettings();
 void sendInfo(void);
+void setAccelandSpeed(int motor, int accel, int speed);
 #endif // MACSTEPPER_H

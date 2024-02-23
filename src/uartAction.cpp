@@ -112,6 +112,25 @@ void missionMotor(motorSettings& motor, messageProtocol& message){
     Serial.println("<1>");
 }
 
+void hizivmeAyarla(motorSettings& motor , messageProtocol& message){
+    //mesajın içinde kaç virgül olduğunu buluyoruz ve bu virgüllerin indexlerini buluyoruz.
+    int messageLength = message.message.length();
+    int index = 0;
+    int commaCount = 0;
+    int commaIndex[messageLength];
+    while(index < messageLength){
+        if(message.message[index] == message.separatorChar){
+            commaIndex[commaCount] = index;
+            commaCount++;
+        }
+        index++;
+    }
+    int motorNo = message.message.substring(commaIndex[0]+1,commaIndex[1]).toInt();
+    int hiz = message.message.substring(commaIndex[1]+1,commaIndex[2]).toInt();
+    int ivme = message.message.substring(commaIndex[2]+1,commaIndex[3]).toInt();
+    setAccelandSpeed(motorNo, ivme, hiz);
+    Serial.println("<HIZIVME Ayarlandi>");
+}
 
 void offsetMotor(motorSettings& motor){
     motor.motor0currentDegree = 0;
