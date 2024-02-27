@@ -41,6 +41,52 @@ void moveMotor(motorSettings& motor){
     runAndWait();
     Serial.println("<1>");
 }
+void mehter(motorSettings& motor){
+    // motor1 acilarini tutan liste
+    int motor1Acilar[] = {0, 10, 20, 30, 30, 30, 20, 10, 0, 0, 0, -10, -20, -30, -30, -30, -20, -10, 0, 0, 0, 0, 0, 0, 0};
+    // motor2 acilarini tutan liste
+    int motor2Acilar[] = {15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 0, 45, -30, 0, 0};
+    // motor3 acilarini tutan liste
+    int motor3Acilar[] = {45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 0, -45, 30, 0, 0};
+    // motor4 acilarini tutan liste
+    int motor4Acilar[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    //motor5 acilarini tutan liste
+    int motor5Acilar[] = {30, 30, 30, 30, 45, 30, 30, 30, 30, 45, 30, 30, 30, 30, 45, 30, 30, 30, 30, 45, 30, 90, 90, 0, 0};
+    //motor1 hizlari listesi
+    int motor1Hizlar[] = {200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 150, 250, 250, 250};
+    //motor2 hizlari listesi
+    int motor2Hizlar[] = {250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 150, 250, 250, 250};
+    //motor3 hizlari listesi
+    int motor3Hizlar[] = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+    //motor4 hizlari listesi
+    int motor4Hizlar[] = {250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 250, 50, 250, 250, 250, 250};
+    //motor5 hizlari listesi
+    int motor5Hizlar[] = {200, 200, 200, 200, 50, 50, 200, 200, 200, 50, 50, 200, 200, 200, 50, 50, 200, 200, 200, 200, 50, 150, 250, 250, 250};
+    //motor1 ivmeleri listesi
+    int motor1Ivmeler[] = {2200, 2200, 2200, 2200, 2700, 2700, 2200, 2200, 2200, 2700, 2700, 2200, 2200, 2200, 2700, 2700, 2200, 2200, 2200, 2200, 2700, 2000, 3000, 4000, 4000};
+    //motor2 ivmeleri listesi
+    int motor2Ivmeler[] = {4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 2000, 1500, 3000, 4000, 4000};
+    //motor3 ivmeleri listesi
+    int motor3Ivmeler[] = {3000, 3000, 3000, 3000, 850, 850, 3000, 3000, 3000, 850, 850, 3000, 3000, 3000, 850, 850, 3000, 3000, 3000, 3000, 850, 1500, 3000, 3000, 3000};
+    //motor4 ivmeleri listesi
+    int motor4Ivmeler[] = {4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000};
+    //motor5 ivmeleri listesi
+    int motor5Ivmeler[] = {3200, 3200, 3200, 3200, 1000, 1000, 3200, 3200, 4000, 1000, 1000, 3200, 3200, 3200, 1000, 1000, 3200, 3200, 1000, 1000, 1000, 1500, 4000, 4000, 4000};
+
+    for(int i = 0; i < 25; i++){
+        motor.motor0degree = motor1Acilar[i];
+        motor.motor1degree = motor2Acilar[i];
+        motor.motor2degree = motor3Acilar[i];
+        motor.motor3degree = motor4Acilar[i];
+        motor.motor4degree = motor5Acilar[i];
+        setAccelandSpeed(0, motor1Ivmeler[i], motor1Hizlar[i]);
+        setAccelandSpeed(1, motor2Ivmeler[i], motor2Hizlar[i]);
+        setAccelandSpeed(2, motor3Ivmeler[i], motor3Hizlar[i]);
+        setAccelandSpeed(3, motor4Ivmeler[i], motor4Hizlar[i]);
+        setAccelandSpeed(4, motor5Ivmeler[i], motor5Hizlar[i]);
+        goMotor(motor);
+    }
+}
 
 void goMotor(motorSettings& motor){
     motor.motor0estDegree = motor.motor0degree - motor.motor0currentDegree;
@@ -80,8 +126,7 @@ void goMotor(motorSettings& motor){
     }
     Serial.println("<1>");
 }
-
-void missionMotor(motorSettings& motor, messageProtocol& message){
+void missionMotorWithAccel(motorSettings& motor, messageProtocol& message){ // Hatalı fonksiyon
     //mesajın içinde kaç virgül olduğunu buluyoruz ve bu virgüllerin indexlerini buluyoruz.
     int messageLength = message.message.length();
     int index = 0;
@@ -101,6 +146,52 @@ void missionMotor(motorSettings& motor, messageProtocol& message){
         motor.motor2degree = message.message.substring(commaIndex[5*i+3]+1,commaIndex[5*i+4]).toInt();
         motor.motor3degree = message.message.substring(commaIndex[5*i+4]+1,commaIndex[5*i+5]).toInt();
         motor.motor4degree = message.message.substring(commaIndex[5*i+5]+1,commaIndex[5*i+6]).toInt();
+        Serial.println("<GOREV tetiklendi>");
+        Serial.print("<motor0degree: "+String(motor.motor0degree)+">");
+        Serial.print("<motor1degree: "+String(motor.motor1degree)+">");
+        Serial.print("<motor2degree: "+String(motor.motor2degree)+">");
+        Serial.print("<motor3degree: "+String(motor.motor3degree)+">");
+        Serial.print("<motor4degree: "+String(motor.motor4degree)+">");
+        goMotor(motor);
+    }
+    Serial.println("<1>");
+}
+void missionMotor(motorSettings& motor, messageProtocol& message){
+    //mesajın içinde kaç virgül olduğunu buluyoruz ve bu virgüllerin indexlerini buluyoruz.
+    int messageLength = message.message.length();
+    int index = 0;
+    int commaCount = 0;
+    int commaIndex[messageLength];
+    while(index < messageLength){
+        if(message.message[index] == message.separatorChar){
+            commaIndex[commaCount] = index;
+            commaCount++;
+        }
+        index++;
+    }
+    motor.missionNumber = message.message.substring(commaIndex[0]+1,commaIndex[1]).toInt();
+    for (int i = 0; i < motor.missionNumber; i++){
+        motor.motor0degree = message.message.substring(commaIndex[15*i+1]+1,commaIndex[15*i+2]).toInt();
+        motor.motor1degree = message.message.substring(commaIndex[15*i+2]+1,commaIndex[15*i+3]).toInt();
+        motor.motor2degree = message.message.substring(commaIndex[15*i+3]+1,commaIndex[15*i+4]).toInt();
+        motor.motor3degree = message.message.substring(commaIndex[15*i+4]+1,commaIndex[15*i+5]).toInt();
+        motor.motor4degree = message.message.substring(commaIndex[15*i+5]+1,commaIndex[15*i+6]).toInt();
+        int motor0hiz = message.message.substring(commaIndex[15*i+6]+1,commaIndex[15*i+7]).toInt();
+        int motor1hiz = message.message.substring(commaIndex[15*i+7]+1,commaIndex[15*i+8]).toInt();
+        int motor2hiz = message.message.substring(commaIndex[15*i+8]+1,commaIndex[15*i+9]).toInt();
+        int motor3hiz = message.message.substring(commaIndex[15*i+9]+1,commaIndex[15*i+10]).toInt();
+        int motor4hiz = message.message.substring(commaIndex[15*i+10]+1,commaIndex[15*i+11]).toInt();
+        int motor0ivme = message.message.substring(commaIndex[15*i+11]+1,commaIndex[15*i+12]).toInt();
+        int motor1ivme = message.message.substring(commaIndex[15*i+12]+1,commaIndex[15*i+13]).toInt();
+        int motor2ivme = message.message.substring(commaIndex[15*i+13]+1,commaIndex[15*i+14]).toInt();
+        int motor3ivme = message.message.substring(commaIndex[15*i+14]+1,commaIndex[15*i+15]).toInt();
+        int motor4ivme = message.message.substring(commaIndex[15*i+15]+1,commaIndex[15*i+16]).toInt();
+        setAccelandSpeed(0, motor0ivme, motor0hiz);
+        setAccelandSpeed(1, motor1ivme, motor1hiz);
+        setAccelandSpeed(2, motor2ivme, motor2hiz);
+        setAccelandSpeed(3, motor3ivme, motor3hiz);
+        setAccelandSpeed(4, motor4ivme, motor4hiz);
+
         Serial.println("<GOREV tetiklendi>");
         Serial.print("<motor0degree: "+String(motor.motor0degree)+">");
         Serial.print("<motor1degree: "+String(motor.motor1degree)+">");

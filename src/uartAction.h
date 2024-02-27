@@ -9,6 +9,7 @@ void setCurrentDegreeGo(motorSettings& motor);
 void offsetMotor(motorSettings& motor);
 void hizivmeAyarla(motorSettings& motor , messageProtocol& message);
 void missionMotor(motorSettings& motor, messageProtocol& message);
-
+void missionMotorWithAccel(motorSettings& motor, messageProtocol& message);
+void mehter(motorSettings& motor);
 
 #endif // UART_ACTION_H

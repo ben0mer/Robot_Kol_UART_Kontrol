@@ -81,10 +81,16 @@ void messageParser(void){
         Serial.println("<HIZIVME tetiklendi>");
         hizivmeAyarla(*motorPtr, *messagePtr);
     }
+    else if(messagePtr->message.substring(0,6) == "MEHTER"){
+        Serial.println("<MEHTER tetiklendi>");
+        
+        mehter(*motorPtr);
+    }
     else if(messagePtr->message.substring(0,5) == "GOREV"){
         Serial.println("<GOREV Basliyor>");
         Serial.println("<2>");
         missionMotor(*motorPtr, *messagePtr);
+        //missionMotorWithAccel(*motorPtr, *messagePtr);
     }
     else if(messagePtr->message.substring(0,6) == "AYARLA"){
         //mesajın içinde 5 virgül olmalı bu virgüllerin indexlerini buluyoruz.

@@ -134,11 +134,16 @@ void prepareMovement(int whichMotor, int degrees) {
     unsigned long stepsAtFullSpeed = stepsAbs - 2 * si.estStepsToSpeed; // Maksimum hızda atılacak adım sayısı
     float accelDecelTime = getDurationOfAcceleration(si, si.estStepsToSpeed); // Yavaşlarken veya hızlanırken geçecek süre hesplanması (ikiside eşit) 
     si.estTimeForMove = 2 * accelDecelTime + stepsAtFullSpeed * si.minStepInterval; // Hareketin tamamlanması için gereken tahmini süre
+    float estSeconds = si.estTimeForMove * 0.004; // Hareketin tamamlanması için gereken tahmini süre (saniye)
+    Serial.println("<SURE,"+String(whichMotor)+","+ String(estSeconds)+",1>");
   }
   else {
     // Bu koşulda motor maksimum hıza ulaşamaz ve yavaşlayarak durur.
     float accelDecelTime = getDurationOfAcceleration( si, stepsAbs / 2 ); // Yavaşlarken geçecek süre (Hareketin yarısında maksimum hıza ulaşılır.)
     si.estTimeForMove = 2 * accelDecelTime; // Hareketin tamamlanması için gereken tahmini süre
+    //Serial.println("<SURE,"+String(whichMotor)+","+ String(si.estTimeForMove)+">");
+    float estSeconds = si.estTimeForMove * 0.004;
+    Serial.println("<SURE,"+String(whichMotor)+","+ String(estSeconds)+",0>");
   }
 }
 void resetStepper(volatile stepperInfo& si) {
@@ -176,13 +181,19 @@ volatile int bufferAim[] = {90,120,300,6,60};
 
 
 void runAndWait() {
+  
   adjustSpeedScales();
   setNextInterruptInterval();
+  unsigned long startTime = millis(); // Fonksiyonun başlangıç zamanını kaydet
   TIMER1_INTERRUPTS_ON
   while ( remainingSteppersFlag );
+  unsigned long endTime = millis(); // Fonksiyonun bitiş zamanını kaydet
+  unsigned long elapsedTime = endTime - startTime; // Geçen süreyi hesapla
+  Serial.println("<GECENSURE,"+String(elapsedTime)+">");
   sendInfo();
   remainingSteppersFlag = 0;
   nextStepperFlag = 0;
+  
 }
 void adjustSpeedScales() {
   float maxTime = 0;
@@ -276,7 +287,7 @@ ISR(TIMER1_COMPA_vect)
     }
     buffer[i]++;
     if(buffer[i] == bufferAim[i]){
-      Serial.println("<POZ," + String(i) + "," + String(s.stepPosition) + ">");
+      //Serial.println("<POZ," + String(i) + "," + String(s.stepPosition) + ">");
       buffer[i] = 0;
     }
 
