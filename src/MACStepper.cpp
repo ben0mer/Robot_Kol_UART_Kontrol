@@ -15,8 +15,7 @@ void setAccelandSpeed(int motor, int accel, int speed){
   steppers[motor].minStepInterval = speed;
 }
 
-        
-
+      
 void initSettings(void){
     pinMode(X_STEP_PIN, OUTPUT);
     pinMode(X_DIR_PIN, OUTPUT);
@@ -179,18 +178,23 @@ volatile int buffer[] = {0,0,0,0,0};
 volatile int bufferAim[] = {90,120,300,6,60};
 
 
+void stopMotorAll(){
+  remainingSteppersFlag = 0;
+  nextStepperFlag = 0;
+  TIMER1_INTERRUPTS_OFF
+}
 
 void runAndWait() {
   
   adjustSpeedScales();
   setNextInterruptInterval();
-  unsigned long startTime = millis(); // Fonksiyonun başlangıç zamanını kaydet
+  //unsigned long startTime = millis(); // Fonksiyonun başlangıç zamanını kaydet
   TIMER1_INTERRUPTS_ON
   while ( remainingSteppersFlag );
-  unsigned long endTime = millis(); // Fonksiyonun bitiş zamanını kaydet
-  unsigned long elapsedTime = endTime - startTime; // Geçen süreyi hesapla
-  Serial.println("<GECENSURE,"+String(elapsedTime)+">");
-  sendInfo();
+  //unsigned long endTime = millis(); // Fonksiyonun bitiş zamanını kaydet
+  //unsigned long elapsedTime = endTime - startTime; // Geçen süreyi hesapla
+  //Serial.println("<GECENSURE,"+String(elapsedTime)+">");
+  //sendInfo();
   remainingSteppersFlag = 0;
   nextStepperFlag = 0;
   

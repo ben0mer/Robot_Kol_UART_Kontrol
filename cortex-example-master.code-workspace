@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../../../Desktop/cortex-example-master"
+		},
+		{
+			"name": "StepMotorControl_MEGA",
+			"path": "."
+		},
+		{
+			"name": "UartHaberlesme",
+			"path": "../UartHaberlesme"
+		}
+	],
+	"settings": {}
+}

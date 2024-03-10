@@ -10,6 +10,9 @@ motorSettings *motorPtr = &motor;
 void uartInit(void){
   Serial.begin(9600);
 }
+void stopMotor(void){
+    stopMotorAll();
+}
 
 void motorReset(void){
     motorPtr->motor0degree = 0;
@@ -65,6 +68,7 @@ void messageParser(void){
         motorReset();
     }
     else if(messagePtr->message == "DUR"){
+        stopMotor();
         Serial.println("<DUR tetiklendi>");
     }
     else if(messagePtr->message == "SIFIRLA"){

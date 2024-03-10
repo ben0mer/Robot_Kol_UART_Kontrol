@@ -39,5 +39,6 @@ void messageReset(void);
 void serialEvent(void);
 void messageParser(void);
 void uartInit(void);
+void stopMotor(void);
 
 #endif // UART_H
