@@ -90,6 +90,39 @@ void mehter(motorSettings& motor){
 
     //Serial.println("<SESOFF>");
 }
+void sagHareket(motorSettings& motor){
+    int motor1Acilar[] = {-30, -30, -30, -30, 0, 0, 0};
+    int motor2Acilar[] = {0, 30, 30, 20, 20, 30, 0};
+    int motor3Acilar[] = {0, 50, 50, 40, 40, 50, 0};
+    int motor4Acilar[] = {0, 0, 0, 0, 0, 0, 0};
+    int motor5Acilar[] = {0, 60, 50, 50, 50, 60, 0};
+    for(int i = 0; i < 7; i++){
+        motor.motor0degree = motor1Acilar[i];
+        motor.motor1degree = motor2Acilar[i];
+        motor.motor2degree = motor3Acilar[i];
+        motor.motor3degree = motor4Acilar[i];
+        motor.motor4degree = motor5Acilar[i];
+        goMotor(motor);
+    }
+
+}
+
+void solHareket(motorSettings& motor){
+    int motor1Acilar[] = {30, 30, 30, 30, 0, 0, 0};
+    int motor2Acilar[] = {0, 30, 30, 20, 20, 30, 0};
+    int motor3Acilar[] = {0, 50, 50, 40, 40, 50, 0};
+    int motor4Acilar[] = {0, 0, 0, 0, 0, 0, 0};
+    int motor5Acilar[] = {0, 60, 50, 50, 50, 60, 0};
+    for(int i = 0; i < 7; i++){
+        motor.motor0degree = motor1Acilar[i];
+        motor.motor1degree = motor2Acilar[i];
+        motor.motor2degree = motor3Acilar[i];
+        motor.motor3degree = motor4Acilar[i];
+        motor.motor4degree = motor5Acilar[i];
+        goMotor(motor);
+    }
+
+}
 
 
 

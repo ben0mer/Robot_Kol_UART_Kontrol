@@ -77,9 +77,11 @@ void messageParser(void){
     }
     else if(messagePtr->message == "SAG"){
         Serial.println("<SAG tetiklendi>");
+        sagHareket(*motorPtr);
     }
     else if(messagePtr->message == "SOL"){
         Serial.println("<SOL tetiklendi>");
+        solHareket(*motorPtr);
     }
     else if(messagePtr->message.substring(0,7) == "HIZIVME"){
         Serial.println("<HIZIVME tetiklendi>");

@@ -11,5 +11,7 @@ void hizivmeAyarla(motorSettings& motor , messageProtocol& message);
 void missionMotor(motorSettings& motor, messageProtocol& message);
 void missionMotorWithAccel(motorSettings& motor, messageProtocol& message);
 void mehter(motorSettings& motor);
+void sagHareket(motorSettings& motor);
+void solHareket(motorSettings& motor);
 
 #endif // UART_ACTION_H
